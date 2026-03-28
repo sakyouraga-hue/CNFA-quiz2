@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Quiz IA – CNFA | Découvre ton potentiel</title>
+<link rel="icon" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://js-de.sentry-cdn.com/76e788b941662f8a14295f74b1513b6b.min.js" crossorigin="anonymous"></script>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','936164965830807');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=936164965830807&ev=PageView&noscript=1"/></noscript>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--blue:#0055FF;--blue-dk:#003FCC;--bg:#F7F8FA;--white:#fff;--g100:#F0F1F3;--g200:#E1E4E8;--g400:#9CA3AF;--g600:#6B7280;--g900:#111827;--green:#10B981;--fh:'Montserrat',sans-serif;--fb:'Inter',sans-serif;--nav:62px;}
+html,body{height:100%;overflow:hidden;background:#E8EAF0;font-family:var(--fb);color:var(--g900);}
+#app{height:100%;display:flex;flex-direction:column;align-items:center;}
+#wrap{width:100%;max-width:440px;height:100%;display:flex;flex-direction:column;background:var(--bg);box-shadow:0 0 40px rgba(0,0,0,.12);}
+.hd{flex-shrink:0;background:var(--white);border-bottom:1px solid var(--g200);transition:background .3s,border-color .3s;}
+.hd-inner{display:flex;align-items:center;gap:8px;padding:9px 14px;min-height:46px;}
+.btn-bk{width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--g200);background:transparent;cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--g400);transition:all .2s;}
+.btn-bk:hover{border-color:var(--g400);color:var(--g900);}
+.btn-bk svg{width:13px;height:13px;}
+.q-ctr{font-size:11px;font-weight:600;color:var(--g400);white-space:nowrap;display:none;}
+.hd-logo{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.logo-img{height:26px;object-fit:contain;display:none;}
+.logo-txt{display:flex;align-items:center;gap:8px;}
+.logo-sym{font-family:var(--fh);font-weight:900;font-size:15px;color:var(--blue);letter-spacing:-1px;}
+.logo-div{width:1px;height:20px;background:var(--g200);}
+.logo-name{font-family:var(--fh);font-weight:800;font-size:13px;line-height:1.1;}
+.logo-sub{font-size:7.5px;color:var(--g400);line-height:1.3;}
+.prog-wrap{height:3px;background:var(--g100);}
+.prog-bar{height:3px;background:var(--blue);transition:width .4s ease;width:0%;}
+.slides{flex:1;overflow:hidden;position:relative;}
+.slide{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;animation:fi .25s ease;}
+.slide.active{display:flex;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.inn{width:100%;padding:18px 16px calc(var(--nav) + 18px);}
+.inn.np{padding-bottom:18px;}
+.bnav{flex-shrink:0;height:var(--nav);background:var(--white);border-top:1px solid var(--g200);display:none;align-items:center;padding:0 14px;transition:background .3s,border-color .3s;}
+.bnav.dm{background:#0A0F1E;border-top-color:#1e2540;}
+.btn-cnt{width:100%;height:48px;background:var(--blue);color:white;border:none;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;}
+.hd.s1mode .hd-inner{justify-content:center;}
+.hd.s1mode .hd-logo{margin-left:0;}
+.hd.s1mode .btn-bk,.hd.s1mode .q-ctr{display:none!important;}
+.btn-cnt:hover:not(:disabled){background:var(--blue-dk);}
+.btn-cnt:disabled{background:var(--g200);color:var(--g400);cursor:not-allowed;}
+.btn-cnt.hide{display:none;}
+.ql{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:7px;}
+.qt{font-family:var(--fh);font-weight:800;font-size:19px;line-height:1.3;margin-bottom:12px;}
+.q-helper{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--g400);background:var(--g100);border-radius:100px;padding:4px 10px;margin-bottom:12px;}
+.ch{display:flex;flex-direction:column;gap:7px;}
+.ch.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.cb{display:flex;align-items:center;gap:11px;padding:12px 14px;background:var(--white);border:2px solid var(--g200);border-radius:13px;cursor:pointer;text-align:left;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--g900);width:100%;transition:border-color .15s,background .15s;}
+.ch.g2 .cb{flex-direction:column;gap:5px;align-items:flex-start;padding:13px 12px;}
+.cb:hover{border-color:var(--blue);background:#F4F7FF;}
+.cb.sel{border-color:var(--blue);background:#EEF4FF;color:var(--blue);}
+.cico{width:32px;height:32px;border-radius:8px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.cb.sel .cico{background:#D4E4FF;}
+.s1t{font-family:var(--fh);font-weight:900;font-size:21px;line-height:1.22;margin-bottom:8px;}
+.s1t em{color:var(--blue);font-style:normal;}
+.s1sub{font-size:13px;color:var(--g600);margin-bottom:14px;line-height:1.5;}
+.ba{display:grid;grid-template-columns:1fr 1fr;border-radius:13px;overflow:hidden;margin-bottom:13px;height:125px;}
+.ba-side{position:relative;overflow:hidden;}
+.ba-side img{width:100%;height:100%;object-fit:cover;}
+.ba-side.bef img{filter:grayscale(60%) brightness(.8);}
+.ba-tag{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.7);color:white;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:5px;text-transform:uppercase;}
+.ba-side.aft .ba-tag{background:var(--blue);}
+.mets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:13px;}
+.mc{background:var(--white);border:1px solid var(--g200);border-radius:10px;padding:10px 6px;text-align:center;}
+.mv{font-family:var(--fh);font-weight:900;font-size:14px;color:var(--blue);margin-bottom:2px;}
+.ml{font-size:9.5px;color:var(--g600);line-height:1.3;}
+.btn-cta{width:100%;padding:16px;background:var(--blue);color:white;border:none;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;}
+.btn-cta:hover{background:var(--blue-dk);}
+.s1fine{text-align:center;font-size:10.5px;color:var(--g400);margin-top:8px;}
+.dk{background:#0A0F1E;color:white;}
+.dk .inn{color:white;}
+.big-n{font-family:var(--fh);font-weight:900;font-size:76px;color:var(--blue);line-height:1;display:block;margin-bottom:5px;}
+.big-l{font-family:var(--fh);font-weight:700;font-size:19px;margin-bottom:12px;line-height:1.3;}
+.big-s{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65;}
+.big-s strong{color:rgba(255,255,255,.85);}
+.illus{width:100%;border-radius:13px;overflow:hidden;margin-top:18px;height:140px;object-fit:cover;opacity:.8;}
+.cv-label{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:7px;}
+.cv-title{font-family:var(--fh);font-weight:800;font-size:18px;line-height:1.3;margin-bottom:14px;}
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px;}
+.comp-col{border-radius:13px;padding:14px 12px;}
+.comp-col.bad{background:#FFF1F1;border:1.5px solid #FECACA;}
+.comp-col.gd{background:#F0F9FF;border:1.5px solid #BAE6FD;}
+.comp-hd{font-weight:700;font-size:11px;margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid currentColor;opacity:.55;text-transform:uppercase;letter-spacing:.5px;}
+.comp-col.bad .comp-hd{color:#DC2626;}
+.comp-col.gd .comp-hd{color:#0369A1;}
+.comp-it{display:flex;align-items:flex-start;gap:5px;margin-bottom:7px;font-size:11.5px;line-height:1.4;}
+.ex-card{background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:11px;padding:12px;margin-bottom:12px;font-size:12.5px;line-height:1.5;}
+.ex-card strong{color:#15803D;}
+.ctr-badge{display:inline-flex;align-items:center;gap:6px;background:#EEF4FF;border:1.5px solid #C7DAFF;color:var(--blue);font-weight:700;font-size:12.5px;padding:6px 12px;border-radius:100px;margin-bottom:14px;}
+.tcard{background:var(--white);border:1.5px solid var(--g200);border-radius:13px;padding:14px;margin-bottom:9px;}
+.tc-hd{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.tav{width:36px;height:36px;border-radius:50%;object-fit:cover;}
+.tname{font-weight:600;font-size:13px;}
+.trole{font-size:10.5px;color:var(--g400);}
+.tstars{color:#FBBF24;font-size:11.5px;margin-bottom:4px;}
+.ttxt{font-size:12px;color:var(--g600);line-height:1.55;}
+.cert-logos{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:14px;}
+.cert-chip{background:var(--white);border:1.5px solid var(--g200);border-radius:7px;padding:7px 11px;font-size:11px;font-weight:600;color:var(--g600);display:flex;align-items:center;gap:5px;}
+.cnfa-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0;}
+.cnfa-st{background:var(--white);border:1.5px solid var(--g200);border-radius:11px;padding:12px 8px;text-align:center;}
+.cnfa-n{font-family:var(--fh);font-weight:900;font-size:18px;color:var(--blue);line-height:1;margin-bottom:3px;}
+.cnfa-l{font-size:10px;color:var(--g600);line-height:1.3;}
+.cnfa-chips{display:flex;flex-direction:column;gap:7px;}
+.cnfa-chip{background:var(--white);border:1.5px solid var(--g200);border-radius:11px;padding:11px 13px;display:flex;align-items:flex-start;gap:9px;font-size:12.5px;}
+.cnfa-chip-ico{font-size:17px;flex-shrink:0;margin-top:1px;}
+.cnfa-chip-t{font-weight:600;font-size:12.5px;}
+.cnfa-chip-d{font-size:11px;color:var(--g600);margin-top:2px;line-height:1.4;}
+.steps{display:flex;flex-direction:column;gap:0;margin-top:14px;}
+.step{display:flex;gap:12px;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;left:16px;top:36px;bottom:0;width:2px;background:var(--g200);}
+.step-n{width:34px;height:34px;border-radius:50%;background:var(--blue);color:white;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;}
+.step-b{padding-bottom:20px;}
+.step-t{font-weight:700;font-size:13.5px;margin-bottom:3px;}
+.step-d{font-size:12px;color:var(--g600);line-height:1.5;}
+.dyn-item{background:var(--white);border:1.5px solid var(--g200);border-radius:13px;padding:14px;margin-bottom:9px;display:none;}
+.dyn-item.show{display:block;}
+.dyn-ico{font-size:22px;margin-bottom:7px;}
+.dyn-t{font-weight:700;font-size:13.5px;margin-bottom:5px;}
+.dyn-d{font-size:12.5px;color:var(--g600);line-height:1.5;}
+.bens{display:flex;flex-direction:column;gap:9px;margin-top:12px;}
+.ben{display:flex;align-items:flex-start;gap:12px;background:var(--white);border:1.5px solid var(--g200);border-radius:12px;padding:13px;}
+.ben-i{width:38px;height:38px;border-radius:10px;background:#EEF4FF;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.ben-t{font-weight:700;font-size:13px;margin-bottom:2px;}
+.ben-d{font-size:11.5px;color:var(--g600);line-height:1.4;}
+.load{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 14px 20px;}
+.load-t{font-family:var(--fh);font-weight:800;font-size:19px;margin-bottom:5px;}
+.load-s{font-size:13px;color:var(--g600);margin-bottom:28px;}
+.lsteps{width:100%;max-width:340px;margin-bottom:20px;}
+.lstep{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--g100);opacity:.25;transition:opacity .4s;}
+.lstep.done{opacity:1;}
+.lico{width:26px;height:26px;border-radius:50%;border:2px solid var(--g200);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .35s;}
+.lstep.done .lico{background:var(--green);border-color:var(--green);color:white;}
+.ltxt{text-align:left;font-size:12.5px;font-weight:500;}
+.lpw{width:100%;max-width:340px;height:6px;background:var(--g100);border-radius:100px;overflow:hidden;margin-bottom:22px;}
+.lp{height:6px;background:var(--blue);border-radius:100px;width:0%;transition:width .5s ease;}
+.stat-rev{opacity:0;transition:opacity .6s;margin-bottom:22px;}
+.stat-rev.show{opacity:1;}
+.stat-n{font-family:var(--fh);font-weight:900;font-size:52px;color:var(--blue);line-height:1;}
+.stat-l{font-size:12.5px;color:var(--g600);margin-top:3px;}
+.btn-lres{display:none;max-width:340px;width:100%;padding:15px;background:var(--blue);color:white;border:none;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:13.5px;cursor:pointer;}
+.pers-head{text-align:center;padding:16px 0 14px;}
+.pers-pct{font-family:var(--fh);font-weight:900;font-size:50px;color:var(--blue);line-height:1;}
+.pers-sub{font-size:13px;color:var(--g600);margin-top:5px;line-height:1.5;}
+.pers-card{background:var(--white);border:1.5px solid var(--g200);border-radius:14px;padding:16px;margin-bottom:10px;}
+.pers-card-t{font-weight:700;font-size:13.5px;margin-bottom:11px;}
+.pers-res{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;font-size:12.5px;line-height:1.45;}
+.pers-res-ico{font-size:15px;flex-shrink:0;margin-top:1px;}
+.res-sc{background:var(--white);border:1.5px solid var(--g200);border-radius:16px;padding:22px 14px;text-align:center;margin-bottom:12px;}
+.sc-cir{width:100px;height:100px;border-radius:50%;background:#EEF4FF;border:4px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto 12px;}
+.sc-n{font-family:var(--fh);font-weight:900;font-size:32px;color:var(--blue);line-height:1;}
+.sc-p{font-size:11px;color:var(--blue);font-weight:600;}
+.sc-t{font-family:var(--fh);font-weight:800;font-size:16px;margin-bottom:4px;}
+.sc-s{font-size:12.5px;color:var(--g600);max-width:250px;margin:0 auto;}
+.cl{background:var(--white);border:1.5px solid var(--g200);border-radius:13px;padding:16px;margin-bottom:11px;}
+.cl-t{font-weight:700;font-size:13px;margin-bottom:11px;}
+.cl-it{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12px;}
+.cl-ic{width:17px;height:17px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:9.5px;flex-shrink:0;margin-top:1px;}
+.urg{background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:11px;padding:11px 13px;display:flex;align-items:flex-start;gap:8px;margin-bottom:11px;font-size:12px;color:#92400E;font-weight:500;line-height:1.5;}
+.btn-res{display:block;width:100%;padding:17px;background:var(--blue);color:white;border:none;border-radius:13px;font-family:var(--fh);font-weight:800;font-size:14px;cursor:pointer;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:11px;}
+.btn-res:hover{background:var(--blue-dk);}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+.bdg{background:var(--white);border:1px solid var(--g200);border-radius:10px;padding:10px 6px;text-align:center;}
+.bdg-i{font-size:17px;margin-bottom:3px;}
+.bdg-t{font-size:9.5px;color:var(--g600);line-height:1.3;font-weight:500;}
+</style>
+</head>
+<body>
+<div id="app"><div id="wrap">
+
+<header class="hd" id="hd">
+  <div class="hd-inner">
+    <button class="btn-bk" id="btnBk" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
+    </button>
+    <span class="q-ctr" id="qCtr"></span>
+    <div class="hd-logo">
+      <img class="logo-img" id="logoImg" src="images/logo%20pour%20fond%20blanc.png" alt="CNFA" style="display:block;" onload="this.style.display='block';document.getElementById('logoTxt').style.display='none';" onerror="this.style.display='none';document.getElementById('logoTxt').style.display='flex';">
+      <div class="logo-txt" id="logoTxt" style="display:flex">
+        <span class="logo-sym">./</span>
+        <div class="logo-div"></div>
+        <div><div class="logo-name">CNFA</div><div class="logo-sub">Centre National de Formation<br>et d'Accompagnement</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+</header>
+
+<div class="slides">
+
+<!-- S1 ENTRÉE -->
+<div class="slide active" id="s1">
+  <div class="inn np" style="display:flex;flex-direction:column;padding-top:8px;padding-bottom:16px;">
+    <div class="ql">TEST GRATUIT • MOINS D'UNE MINUTE</div>
+    <h1 class="s1t">Découvre à quel point <em>l'IA va transformer</em> ta carrière</h1>
+    <p class="s1sub">Moins de tâches répétitives. Meilleur poste. Meilleur salaire.</p>
+    <div class="ba">
+      <div class="ba-side bef">
+        <img src="images/avant.png" alt="Avant">
+        <div class="ba-tag">Avant</div>
+      </div>
+      <div class="ba-side aft">
+        <img src="images/apr%C3%A8s.png" alt="Apres">
+        <div class="ba-tag">Apres</div>
+      </div>
+    </div>
+    <div class="mets">
+      <div class="mc"><div class="mv">x3</div><div class="ml">Gain de productivite moyen</div></div>
+      <div class="mc"><div class="mv">+18%</div><div class="ml">Salaire moyen en plus</div></div>
+      <div class="mc"><div class="mv">Certifie</div><div class="ml">Reconnu par l'Etat</div></div>
+    </div>
+    <button class="btn-cta" onclick="startQuiz()">FAIRE LE TEST MAINTENANT</button>
+    <p class="s1fine">100% gratuit - Resultat immediat - Aucun engagement</p>
+  </div>
+</div>
+
+<!-- S2 Q1 -->
+<div class="slide" id="s2">
+  <div class="inn">
+    <div class="ql">Question 1 / 12</div>
+    <h2 class="qt">Tu es plutot...</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c2">
+      <button class="cb" onclick="single(2,this,'salarie')"><div class="cico">&#128188;</div><span>Salarie CDI / CDD</span></button>
+      <button class="cb" onclick="single(2,this,'freelance')"><div class="cico">&#128187;</div><span>Freelance</span></button>
+      <button class="cb" onclick="single(2,this,'reconversion')"><div class="cico">&#128260;</div><span>En reconversion</span></button>
+      <button class="cb" onclick="single(2,this,'manager')"><div class="cico">&#127942;</div><span>Manager</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S3 Q2 -->
+<div class="slide" id="s3">
+  <div class="inn">
+    <div class="ql">Question 2 / 12</div>
+    <h2 class="qt">Tu travailles dans quel secteur ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch g2" id="c3">
+      <button class="cb" onclick="single(3,this,'marketing')"><div class="cico">&#128226;</div><span>Marketing / Digital</span></button>
+      <button class="cb" onclick="single(3,this,'commerce')"><div class="cico">&#129309;</div><span>Commerce / Vente</span></button>
+      <button class="cb" onclick="single(3,this,'tech')"><div class="cico">&#128187;</div><span>Tech / IT</span></button>
+      <button class="cb" onclick="single(3,this,'sante')"><div class="cico">&#127973;</div><span>Sante / Education</span></button>
+      <button class="cb" onclick="single(3,this,'creatif')"><div class="cico">&#127912;</div><span>Creatif / Design</span></button>
+      <button class="cb" onclick="single(3,this,'autre')"><div class="cico">&#10024;</div><span>Autre</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S4 Q3 -->
+<div class="slide" id="s4">
+  <div class="inn">
+    <div class="ql">Question 3 / 12</div>
+    <h2 class="qt">Depuis combien de temps tu es dans ton poste ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c4">
+      <button class="cb" onclick="single(4,this,'moins1an')"><div class="cico">&#127807;</div><span>Moins d'1 an</span></button>
+      <button class="cb" onclick="single(4,this,'1-3ans')"><div class="cico">&#128200;</div><span>1 a 3 ans</span></button>
+      <button class="cb" onclick="single(4,this,'3-5ans')"><div class="cico">&#127919;</div><span>3 a 5 ans</span></button>
+      <button class="cb" onclick="single(4,this,'plus5ans')"><div class="cico">&#127877;</div><span>Plus de 5 ans</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S5 CONVICTION 73% -->
+<div class="slide dk" id="s5">
+  <div class="inn" style="display:flex;flex-direction:column;justify-content:center;padding-top:44px;">
+    <div class="ql" style="color:rgba(255,255,255,.4)">Le saviez-vous ?</div>
+    <span class="big-n">73%</span>
+    <div class="big-l">des offres d'emploi mentionnent<br>l'IA comme competence cle</div>
+    <p class="big-s">Contre seulement <strong>12% en 2023</strong>. En moins de 2 ans, le marche a bascule. Les recruteurs cherchent des profils IA dans tous les secteurs.</p>
+    <img class="illus" src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80" alt="IA">
+  </div>
+</div>
+
+<!-- S6 Q4 REVES MULTI -->
+<div class="slide" id="s6">
+  <div class="inn">
+    <div class="ql">Question 4 / 12</div>
+    <h2 class="qt">Quel est l'impact que tu souhaites dans ta carriere grace a l'IA ?</h2>
+    <div class="q-helper">Plusieurs reponses possibles</div>
+    <div class="ch" id="c6">
+      <button class="cb" onclick="multi(6,this,'temps')"><div class="cico">&#9203;</div><span>Gagner du temps sur les taches repetitives</span></button>
+      <button class="cb" onclick="multi(6,this,'qualite')"><div class="cico">&#128200;</div><span>Ameliorer la qualite de mon travail</span></button>
+      <button class="cb" onclick="multi(6,this,'revenus')"><div class="cico">&#128176;</div><span>Augmenter mes revenus ou mes tarifs</span></button>
+      <button class="cb" onclick="multi(6,this,'reconversion')"><div class="cico">&#128640;</div><span>Changer de poste ou me reconvertir</span></button>
+      <button class="cb" onclick="multi(6,this,'creatif')"><div class="cico">&#127919;</div><span>Etre plus creatif et innovant</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S7 Q5 REVES -->
+<div class="slide" id="s7">
+  <div class="inn">
+    <div class="ql">Question 5 / 12</div>
+    <h2 class="qt">Si l'IA peut ameliorer ta carriere, qu'est-ce que tu souhaites le plus ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch g2" id="c7">
+      <button class="cb" onclick="single(7,this,'augmentation')"><div class="cico">&#128184;</div><span>Augmentation ou meilleurs tarifs</span></button>
+      <button class="cb" onclick="single(7,this,'gagner_temps')"><div class="cico">&#9203;</div><span>Gagner du temps librement</span></button>
+      <button class="cb" onclick="single(7,this,'changer_poste')"><div class="cico">&#128682;</div><span>Changer de poste</span></button>
+      <button class="cb" onclick="single(7,this,'reference')"><div class="cico">&#11088;</div><span>Devenir reference IA</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S8 CONVICTION METHODE -->
+<div class="slide" id="s8">
+  <div class="inn">
+    <div class="cv-label">La vraie difference</div>
+    <h2 class="cv-title">"Connaitre l'IA et savoir l'utiliser, c'est pas la meme chose."</h2>
+    <div class="ex-card">&#128161; <strong>Exemple concret :</strong> Sarah, chargee de com', redigeait ses rapports en 3h. Avec la bonne methode, elle les produit maintenant en <strong>20 minutes</strong>.</div>
+    <div class="comp">
+      <div class="comp-col bad">
+        <div class="comp-hd">Sans methode</div>
+        <div class="comp-it"><span>&#128533;</span><span>Resultats mediocres</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Perd du temps a reformuler</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Abandonne vite</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Aucun gain reel</span></div>
+      </div>
+      <div class="comp-col gd">
+        <div class="comp-hd">Avec methode</div>
+        <div class="comp-it"><span>&#127919;</span><span>Resultats precis d'entree</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>Prompts reutilisables</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>Integre au quotidien</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>x3 productivite min.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 Q6 ECHECS -->
+<div class="slide" id="s9">
+  <div class="inn">
+    <div class="ql">Question 6 / 12</div>
+    <h2 class="qt">Tu as deja essaye d'apprendre l'IA ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c9">
+      <button class="cb" onclick="single(9,this,'jamais')"><div class="cico">&#10067;</div><span>Non, je sais meme pas par ou commencer</span></button>
+      <button class="cb" onclick="single(9,this,'videos')"><div class="cico">&#128250;</div><span>J'ai regarde des videos, sans resultat concret</span></button>
+      <button class="cb" onclick="single(9,this,'outils')"><div class="cico">&#128296;</div><span>J'ai teste des outils, c'etait limite</span></button>
+      <button class="cb" onclick="single(9,this,'pratique')"><div class="cico">&#128640;</div><span>Oui, je veux aller plus loin</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S10 Q7 ECHECS -->
+<div class="slide" id="s10">
+  <div class="inn">
+    <div class="ql">Question 7 / 12</div>
+    <h2 class="qt">Ou t'en es avec l'IA aujourd'hui ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c10">
+      <button class="cb" onclick="single(10,this,'pas_du_tout')"><div class="cico">&#10060;</div><span>Je ne l'utilise pas du tout</span></button>
+      <button class="cb" onclick="single(10,this,'teste_sans')"><div class="cico">&#128270;</div><span>J'ai teste sans methode</span></button>
+      <button class="cb" onclick="single(10,this,'regulier')"><div class="cico">&#9889;</div><span>Je l'utilise regulierement</span></button>
+      <button class="cb" onclick="single(10,this,'maitrise')"><div class="cico">&#128640;</div><span>Je maitrise certains outils</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S11 SOCIAL PROOF -->
+<div class="slide" id="s11">
+  <div class="inn">
+    <div class="cv-label" style="color:var(--blue)">Ils sont passes par la</div>
+    <h2 class="cv-title">Ils etaient exactement dans ta situation</h2>
+    <div class="ctr-badge" style="flex-wrap:wrap;gap:8px;">
+      <span>&#127775; +5000 apprenants formes</span>
+      <img src="images/trustpilot.png" alt="Trustpilot 4.8/5" style="height:24px;object-fit:contain;">
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%201.png" alt=""><div><div class="tname">Sarah M.</div><div class="trole">Responsable marketing, Lyon</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"J'avais peur de l'IA. Apres la formation, j'ai divise mon temps de redaction par 4. Mon manager m'a propose une augmentation de 15%."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%202.png" alt=""><div><div class="tname">Thomas R.</div><div class="trole">Freelance consultant, Paris</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"En 3 semaines, j'ai augmente mes tarifs de 25%. Mes clients adorent que je livre 2x plus vite sans perdre en qualite."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%203.png" alt=""><div><div class="tname">Marine L.</div><div class="trole">En reconversion, Bordeaux</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"J'ai decroche un poste dans le digital en 6 semaines. Les recruteurs cherchent exactement les competences enseignees ici."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%204.png" alt=""><div><div class="tname">Julien K.</div><div class="trole">Manager RH, Toulouse</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"Mes analyses prennent maintenant 30 minutes au lieu de 4 heures. L'IA est devenu mon avantage concurrentiel."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%205.png" alt=""><div><div class="tname">Camille D.</div><div class="trole">Chef de projet, Nantes</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"La methode est vraiment concrete. Des la 1ere semaine j'ai automatise mes reportings. Mon N+1 m'a confie un projet supplementaire."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%206.png" alt=""><div><div class="tname">Alexandre B.</div><div class="trole">Developpeur freelance, Lyon</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"J'ai double ma capacite de production en 1 mois. Ce qui me prenait une journee entiere se fait maintenant en 2 heures."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%207.png" alt=""><div><div class="tname">Noemie F.</div><div class="trole">Assistante RH, Strasbourg</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"J'etais convaincue que l'IA c'etait pas pour moi. Maintenant je forme mes collegues ! La certification m'a ouvert des portes incroyables."</div>
+    </div>
+    <div class="tcard">
+      <div class="tc-hd"><img class="tav" src="images/im%20t%C3%A9moignage%20preuve%208.png" alt=""><div><div class="tname">Remi C.</div><div class="trole">Responsable commercial, Marseille</div></div></div>
+      <div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="ttxt">"Mes propositions commerciales se redigent 5x plus vite. J'ai signe 3 nouveaux clients le mois qui a suivi ma formation."</div>
+    </div>
+  </div>
+</div>
+
+<!-- S12 CNFA -->
+<div class="slide" id="s12">
+  <div class="inn">
+    <div class="cv-label" style="color:var(--blue)">Notre mission</div>
+    <h2 class="cv-title">Mais au fait... c'est quoi le CNFA ?</h2>
+    <p style="font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:4px;">Le CNFA forme des professionnels de tous secteurs a l'IA appliquee avec une methode concrete, adaptee a chaque metier, et reconnue par l'Etat.</p>
+    <div class="cnfa-stat">
+      <div class="cnfa-st"><div class="cnfa-n">+5000</div><div class="cnfa-l">Apprenants formes</div></div>
+      <div class="cnfa-st"><div class="cnfa-n">97%</div><div class="cnfa-l">Taux de satisfaction</div></div>
+      <div class="cnfa-st"><div class="cnfa-n">3 ans</div><div class="cnfa-l">D'expertise IA</div></div>
+    </div>
+    <div class="cnfa-chips">
+      <div class="cnfa-chip"><div class="cnfa-chip-ico">&#127942;</div><div><div class="cnfa-chip-t">Certifie Qualiopi</div><div class="cnfa-chip-d">Organisme de formation reconnu par l'Etat francais</div></div></div>
+      <div class="cnfa-chip"><div class="cnfa-chip-ico">&#128220;</div><div><div class="cnfa-chip-t">Certification RS enregistree</div><div class="cnfa-chip-d">France Competences - valeur officielle sur le marche</div></div></div>
+      <div class="cnfa-chip"><div class="cnfa-chip-ico">&#127919;</div><div><div class="cnfa-chip-t">Pedagogie par la pratique</div><div class="cnfa-chip-d">Cas concrets dans ton secteur, applicable des la 1ere lecon</div></div></div>
+      <div class="cnfa-chip"><div class="cnfa-chip-ico">&#128101;</div><div><div class="cnfa-chip-t">Accompagnement individuel</div><div class="cnfa-chip-d">Un expert disponible a chaque etape de ta progression</div></div></div>
+    </div>
+    <p style="font-size:11px;color:var(--g400);margin:14px 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Certifications reconnues :</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;">
+      <div style="border:1.5px solid var(--g200);border-radius:10px;height:54px;display:flex;align-items:center;justify-content:center;padding:6px;background:white;"><img src="images/CERTIF%201%20cpf.png" alt="CPF" style="max-height:100%;max-width:100%;object-fit:contain;"></div>
+      <div style="border:1.5px solid var(--g200);border-radius:10px;height:54px;display:flex;align-items:center;justify-content:center;padding:6px;background:white;"><img src="images/CERTIF%202%20Qualiopi.png" alt="Qualiopi" style="max-height:100%;max-width:100%;object-fit:contain;"></div>
+      <div style="border:1.5px solid var(--g200);border-radius:10px;height:54px;display:flex;align-items:center;justify-content:center;padding:6px;background:white;"><img src="images/CERTIF%203%20Titres-mcp-es-droit.jpg" alt="Titres" style="max-height:100%;max-width:100%;object-fit:contain;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- S13 Q8 PEUR -->
+<div class="slide" id="s13">
+  <div class="inn">
+    <div class="ql">Question 8 / 12</div>
+    <h2 class="qt">Ce qui te freine le plus dans ton evolution ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c13">
+      <button class="cb" onclick="single(13,this,'taches')"><div class="cico">&#128260;</div><span>Trop de taches repetitives</span></button>
+      <button class="cb" onclick="single(13,this,'salaire')"><div class="cico">&#128176;</div><span>Mon salaire stagne</span></button>
+      <button class="cb" onclick="single(13,this,'peur')"><div class="cico">&#128552;</div><span>Peur d'etre depasse par l'IA</span></button>
+      <button class="cb" onclick="single(13,this,'trajectoire')"><div class="cico">&#129517;</div><span>Je veux changer de trajectoire</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S14 CONVICTION CONCEPT -->
+<div class="slide" id="s14">
+  <div class="inn">
+    <div class="cv-label" style="color:var(--blue)">Notre approche</div>
+    <h2 class="cv-title">Ce n'est pas une formation comme les autres. Voici pourquoi.</h2>
+    <div class="ex-card">&#128161; <strong>Exemple :</strong> Karim, charge de projet, passait 3h par jour sur des taches repetitives. Avec la methode CNFA, il les a reduit a <strong>20 minutes</strong> en 2 semaines.</div>
+    <div class="comp">
+      <div class="comp-col bad">
+        <div class="comp-hd">Formation classique</div>
+        <div class="comp-it"><span>&#128533;</span><span>Contenu theorique, peu actionnable</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Cas generiques, pas ton metier</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Pas de suivi apres</span></div>
+        <div class="comp-it"><span>&#128533;</span><span>Aucune certification reconnue</span></div>
+      </div>
+      <div class="comp-col gd">
+        <div class="comp-hd">Methode CNFA</div>
+        <div class="comp-it"><span>&#127919;</span><span>100% pratique, applicable de suite</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>Adapte a ton secteur et ton poste</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>Coach dedie a chaque etape</span></div>
+        <div class="comp-it"><span>&#127919;</span><span>Certifie Qualiopi + RS officielle</span></div>
+      </div>
+    </div>
+    <div style="background:#EEF4FF;border:1.5px solid #C7DAFF;border-radius:11px;padding:11px 13px;font-size:12.5px;color:var(--blue);font-weight:500;line-height:1.5;margin-top:6px;">
+      &#9989; +5000 professionnels ont deja transforme leur quotidien avec cette methode. A toi maintenant.
+    </div>
+  </div>
+</div>
+
+<!-- S15 Q9 -->
+<div class="slide" id="s15">
+  <div class="inn">
+    <div class="ql">Question 9 / 12</div>
+    <h2 class="qt">Qu'est-ce qui decrit le mieux ta situation aujourd'hui ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c15">
+      <button class="cb" onclick="single(15,this,'trop_taches')"><div class="cico">&#128260;</div><span>Je croule sous les taches repetitives qui me prennent trop de temps</span></button>
+      <button class="cb" onclick="single(15,this,'evolution')"><div class="cico">&#128202;</div><span>Mon evolution de carriere est bloquee ou trop lente</span></button>
+      <button class="cb" onclick="single(15,this,'differencier')"><div class="cico">&#127775;</div><span>Je cherche a me differencier sur le marche du travail</span></button>
+      <button class="cb" onclick="single(15,this,'anticiper')"><div class="cico">&#128302;</div><span>Je veux anticiper les changements IA avant qu'il soit trop tard</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S16 Q10 MULTI -->
+<div class="slide" id="s16">
+  <div class="inn">
+    <div class="ql">Question 10 / 12</div>
+    <h2 class="qt">Qu'est-ce qui pourrait t'empecher d'apprendre a utiliser l'IA ?</h2>
+    <div class="q-helper">Plusieurs reponses possibles</div>
+    <div class="ch" id="c16">
+      <button class="cb" onclick="multi(16,this,'temps')"><div class="cico">&#9200;</div><span>Le temps - j'ai un emploi du temps charge</span></button>
+      <button class="cb" onclick="multi(16,this,'depart')"><div class="cico">&#128506;</div><span>Je sais pas par ou commencer</span></button>
+      <button class="cb" onclick="multi(16,this,'confiance')"><div class="cico">&#128170;</div><span>La confiance - j'ai peur de ne pas y arriver</span></button>
+      <button class="cb" onclick="multi(16,this,'pertinence')"><div class="cico">&#128161;</div><span>Je vois pas encore comment ca m'aide concretement</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S17 CONVICTION DYNAMIQUE -->
+<div class="slide" id="s17">
+  <div class="inn">
+    <div class="cv-label" style="color:var(--blue)">On a une reponse</div>
+    <h2 class="cv-title" id="dynTitle">On a pense exactement a toi.</h2>
+    <div id="dynItems">
+      <div class="dyn-item" id="dyn-temps"><div class="dyn-ico">&#9200;</div><div class="dyn-t">Le temps ? Les modules font 15 minutes.</div><div class="dyn-d">Concu pour les gens qui n'ont pas le temps. 1h par semaine suffit pour progresser. Tu avances a ton rythme, sans contrainte.</div></div>
+      <div class="dyn-item" id="dyn-depart"><div class="dyn-ico">&#128506;</div><div class="dyn-t">Pas de point de depart ? C'est exactement ce qu'on donne.</div><div class="dyn-d">Un plan structure, etape par etape. Tu sais quoi faire, dans quel ordre, et pourquoi. Pas de questions existentielles.</div></div>
+      <div class="dyn-item" id="dyn-confiance"><div class="dyn-ico">&#128170;</div><div class="dyn-t">Confiance ? +5000 personnes avaient la meme peur.</div><div class="dyn-d">92% d'entre eux ont vu des resultats des la 1ere semaine. La methode est concue pour les debutants complets.</div></div>
+      <div class="dyn-item" id="dyn-pertinence"><div class="dyn-ico">&#128161;</div><div class="dyn-t">Pas pertinent ? On n'a pas encore montre le bon exemple.</div><div class="dyn-d">L'IA s'adapte a ton metier. Tu verras des applications concretes dans ton secteur - pas des cas generiques.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S18 Q11 -->
+<div class="slide" id="s18">
+  <div class="inn">
+    <div class="ql">Question 11 / 12</div>
+    <h2 class="qt">Combien de temps par semaine pour ta formation ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch" id="c18">
+      <button class="cb" onclick="single(18,this,'moins1h')"><div class="cico">&#9889;</div><span>Moins d'1h par semaine</span></button>
+      <button class="cb" onclick="single(18,this,'1-3h')"><div class="cico">&#128218;</div><span>1 a 3h par semaine</span></button>
+      <button class="cb" onclick="single(18,this,'3-5h')"><div class="cico">&#127919;</div><span>3 a 5h par semaine</span></button>
+      <button class="cb" onclick="single(18,this,'plus5h')"><div class="cico">&#128640;</div><span>Plus de 5h par semaine</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S19 Q12 -->
+<div class="slide" id="s19">
+  <div class="inn">
+    <div class="ql">Question 12 / 12</div>
+    <h2 class="qt">Dans combien de temps tu veux voir des resultats ?</h2>
+    <div class="q-helper">Reponse unique - clique sur ta situation</div>
+    <div class="ch g2" id="c19">
+      <button class="cb" onclick="single19(this,'cette_semaine')"><div class="cico">&#9889;</div><span>Des cette semaine</span></button>
+      <button class="cb" onclick="single19(this,'dans_mois')"><div class="cico">&#128197;</div><span>Dans le mois</span></button>
+      <button class="cb" onclick="single19(this,'dans_3mois')"><div class="cico">&#128198;</div><span>Dans 3 mois</span></button>
+      <button class="cb" onclick="single19(this,'pas_delai')"><div class="cico">&#127754;</div><span>Pas de delai precis</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- S20 CONVICTION BENEFITS -->
+<div class="slide" id="s20">
+  <div class="inn">
+    <div class="cv-label" style="color:var(--blue)">Ton programme</div>
+    <h2 class="cv-title">Voila ce que tu vas developper</h2>
+    <div class="bens">
+      <div class="ben"><div class="ben-i">&#129504;</div><div><div class="ben-t">Maitrise des prompts</div><div class="ben-d">Formule des instructions qui donnent des resultats pro des la 1ere fois.</div></div></div>
+      <div class="ben"><div class="ben-i">&#9889;</div><div><div class="ben-t">Automatisation des taches</div><div class="ben-d">Delegue tes taches repetitives et recupere 2 a 4h par jour.</div></div></div>
+      <div class="ben"><div class="ben-i">&#128188;</div><div><div class="ben-t">Posture professionnelle IA</div><div class="ben-d">Deviens la reference IA dans ton equipe ou aupres de tes clients.</div></div></div>
+      <div class="ben"><div class="ben-i">&#128220;</div><div><div class="ben-t">Certification officielle</div><div class="ben-d">Valide tes competences avec une certification reconnue par l'Etat.</div></div></div>
+      <div class="ben"><div class="ben-i">&#127919;</div><div><div class="ben-t">Strategie sur ton metier</div><div class="ben-d">Applications concretes dans ton secteur, pas des cas generiques.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S21 LOADING -->
+<div class="slide" id="s21">
+  <div class="inn np load">
+    <div class="load-t">Analyse en cours...</div>
+    <div class="load-s">On croise tes reponses avec +5000 profils similaires</div>
+    <div class="lsteps">
+      <div class="lstep" id="ls1"><div class="lico" id="li1">o</div><div class="ltxt">Analyse de ton profil professionnel</div></div>
+      <div class="lstep" id="ls2"><div class="lico" id="li2">o</div><div class="ltxt">Calcul de ton potentiel IA</div></div>
+      <div class="lstep" id="ls3"><div class="lico" id="li3">o</div><div class="ltxt">Comparaison avec +5000 apprenants</div></div>
+      <div class="lstep" id="ls4"><div class="lico" id="li4">o</div><div class="ltxt">Generation de ton resultat personnalise</div></div>
+    </div>
+    <div class="lpw"><div class="lp" id="lp"></div></div>
+    <div class="stat-rev" id="stRev"><div class="stat-n">92%</div><div class="stat-l">de compatibilite avec la formation CNFA IA</div></div>
+    <button class="btn-lres" id="btnLRes" onclick="goTo(22)">Voir mon resultat</button>
+  </div>
+</div>
+
+<!-- S22 SLIDE PERSONNALISEE -->
+<div class="slide" id="s22">
+  <div class="inn np">
+    <div class="pers-head">
+      <div class="ql" style="text-align:center;margin-bottom:5px">Ton profil en chiffres</div>
+      <div class="pers-pct">80%</div>
+      <div class="pers-sub">des personnes avec ton profil qui ont rejoint la formation CNFA ont obtenu des resultats concrets.</div>
+    </div>
+    <div class="pers-card">
+      <div class="pers-card-t">Voici ce qu'ils ont accompli :</div>
+      <div id="persResults"></div>
+    </div>
+    <div style="background:#EEF4FF;border:1.5px solid #C7DAFF;border-radius:11px;padding:13px 14px;font-size:12.5px;color:var(--blue);font-weight:500;line-height:1.5;margin-bottom:4px;">
+      Leur point commun ? Ils avaient le meme profil que toi - et ils ont saute le pas.
+    </div>
+    <button class="btn-cta" style="margin-top:12px" onclick="goTo(23)">Voir mon resultat complet</button>
+  </div>
+</div>
+
+<!-- S23 RESULTAT FINAL -->
+<div class="slide" id="s23">
+  <div class="inn np">
+    <div class="res-sc">
+      <div class="sc-cir"><div class="sc-n">92</div><div class="sc-p">% compat.</div></div>
+      <div class="sc-t">Ton profil est hautement compatible</div>
+      <div class="sc-s">Tu es exactement le profil qui tire le plus de valeur de cette formation.</div>
+    </div>
+    <div class="cl">
+      <div class="cl-t">Ce que cette formation va changer pour toi :</div>
+      <div class="cl-it"><div class="cl-ic">v</div><span>Reduire tes taches repetitives de 60 a 80% des les premieres semaines</span></div>
+      <div class="cl-it"><div class="cl-ic">v</div><span>Valoriser tes competences IA pour evoluer professionnellement</span></div>
+      <div class="cl-it"><div class="cl-ic">v</div><span>Obtenir une certification officielle reconnue par l'Etat</span></div>
+      <div class="cl-it"><div class="cl-ic">v</div><span>Devenir la reference IA dans ton equipe ou aupres de tes clients</span></div>
+      <div class="cl-it"><div class="cl-ic">v</div><span>Securiser ta carriere face aux mutations du marche de l'emploi</span></div>
+    </div>
+    <div class="urg">&#128293; <span><strong>Acces limite a 250 personnes</strong> pour la session d'entree de mars - pour garantir la qualite de l'accompagnement individuel.</span></div>
+    <a href="https://go.cnfa-france.fr" class="btn-res" onclick="fbq('track','CompleteRegistration');trackConv()">ACCEDER A LA FORMATION DES MAINTENANT</a>
+    <div class="badges">
+      <div class="bdg"><div class="bdg-i">&#127942;</div><div class="bdg-t">Certifie Qualiopi</div></div>
+      <div class="bdg"><div class="bdg-i">&#128220;</div><div class="bdg-t">Certification reconnue par l'Etat</div></div>
+      <div class="bdg"><div class="bdg-i">&#128101;</div><div class="bdg-t">Accompagnement personnalise</div></div>
+    </div>
+    <p style="text-align:center;font-size:10px;color:var(--g400);line-height:1.6;padding-bottom:10px">CNFA - Centre National de Formation et d'Accompagnement<br>Organisme certifie Qualiopi</p>
+  </div>
+</div>
+
+</div><!-- /slides -->
+
+<nav class="bnav" id="bnav">
+  <div class="bnav-in" style="width:100%;">
+    <button class="btn-cnt hide" id="btnCnt" onclick="handleCnt()">Continuer</button>
+  </div>
+</nav>
+
+</div></div>
+
+<script>
+const TOTAL=23;
+const NO_BK=new Set([1,21,22,23]);
+const NO_NAV=new Set([1,21,22,23]);
+const HIDE_C=new Set([2,3,4,7,9,10,13,15,18]);
+const MULTI_NEXT={6:7,16:17};
+const CONV_NEXT={5:6,8:9,11:12,12:13,14:15,17:18,20:21};
+const SNEXT={2:3,3:4,4:5,7:8,9:10,10:11,13:14,15:16,18:19};
+const QNUM={2:1,3:2,4:3,6:4,7:5,9:6,10:7,13:8,15:9,16:10,18:11,19:12};
+const TOTAL_Q=12;
+let cur=1,answers={},multiSel={},uid='';
+
+(function init(){
+  uid=localStorage.getItem('cnfa_uid')||('usr_'+Math.random().toString(36).substr(2,6).toUpperCase());
+  localStorage.setItem('cnfa_uid',uid);
+  const devSlide=parseInt(new URLSearchParams(location.search).get('slide'));
+  if(devSlide>=1&&devSlide<=TOTAL){goTo(devSlide,true);return;}
+  const saved=localStorage.getItem('cnfa_v2');
+  if(saved){try{const d=JSON.parse(saved);answers=d.a||{};multiSel=d.m||{};if(d.c>1&&d.c<=TOTAL){goTo(d.c,true);return;}}catch(e){}}
+  updateUI();
+})();
+
+function save(){localStorage.setItem('cnfa_v2',JSON.stringify({c:cur,a:answers,m:multiSel,uid}));}
+
+function goTo(n,skipSave){
+  if(n<1||n>TOTAL)return;
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  updateUI();
+  if(!skipSave)save();
+  const sl=document.getElementById('s'+cur);
+  sl.scrollTo({top:0});
+  if(cur===21)startLoading();
+  if(cur===22)renderPers();
+}
+
+function goBack(){if(cur>1)goTo(cur-1);}
+
+function handleCnt(){
+  if(cur===19){if(!answers['q12'])return;goTo(20);return;}
+  if(MULTI_NEXT[cur]!==undefined){if(!multiSel[cur]||!multiSel[cur].length)return;goTo(MULTI_NEXT[cur]);return;}
+  if(CONV_NEXT[cur]!==undefined){goTo(CONV_NEXT[cur]);}
+}
+
+function updateUI(){
+  document.getElementById('progBar').style.width=((cur-1)/(TOTAL-1)*100)+'%';
+  const bk=document.getElementById('btnBk');
+  bk.style.display=NO_BK.has(cur)?'none':'flex';
+  const qc=document.getElementById('qCtr');
+  if(!NO_BK.has(cur)){qc.style.display='block';qc.textContent='Question pr\u00e9c\u00e9dente';}
+  else{qc.style.display='none';}
+  const isDark=cur===5;
+  const hd=document.getElementById('hd');
+  hd.classList.toggle('s1mode',cur===1);
+  hd.style.background=isDark?'#0A0F1E':'';
+  hd.style.borderBottomColor=isDark?'#1e2540':'';
+  document.getElementById('btnBk').style.color=isDark?'rgba(255,255,255,.5)':'';
+  document.getElementById('qCtr').style.color=isDark?'rgba(255,255,255,.4)':'';
+  const li=document.getElementById('logoImg');
+  if(li)li.src=isDark?'images/logo%20pour%20fond%20fonc%C3%A9.png':'images/logo%20pour%20fond%20blanc.png';
+  const nav=document.getElementById('bnav');
+  nav.style.display=NO_NAV.has(cur)?'none':'flex';
+  nav.classList.toggle('dm',isDark);
+  const cnt=document.getElementById('btnCnt');
+  if(HIDE_C.has(cur)){cnt.classList.add('hide');}
+  else{
+    cnt.classList.remove('hide');
+    if(MULTI_NEXT[cur]!==undefined){cnt.disabled=!multiSel[cur]||!multiSel[cur].length;cnt.textContent='Continuer';}
+    else if(cur===19){cnt.disabled=!answers['q12'];cnt.textContent='VOIR MON RESULTAT';}
+    else{cnt.disabled=false;cnt.textContent='Continuer';}
+  }
+  if(cur===17)renderDyn();
+}
+
+function single(sn,btn,val){
+  answers['q'+sn]=val;
+  document.querySelectorAll('#c'+sn+' .cb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');save();
+  setTimeout(()=>{if(SNEXT[sn])goTo(SNEXT[sn]);},260);
+}
+
+function single19(btn,val){
+  answers['q12']=val;
+  document.querySelectorAll('#c19 .cb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');save();updateUI();
+}
+
+function multi(sn,btn,val){
+  if(!multiSel[sn])multiSel[sn]=[];
+  const idx=multiSel[sn].indexOf(val);
+  if(idx===-1){multiSel[sn].push(val);btn.classList.add('sel');}
+  else{multiSel[sn].splice(idx,1);btn.classList.remove('sel');}
+  answers['q'+sn]=[...multiSel[sn]];save();updateUI();
+}
+
+function renderDyn(){
+  const sel=multiSel[16]||[];
+  ['temps','depart','confiance','pertinence'].forEach(k=>{
+    const el=document.getElementById('dyn-'+k);
+    if(el)el.classList.toggle('show',sel.length===0||sel.includes(k));
+  });
+  const titles={temps:"Le temps ? On a concu la formation pour ca.",depart:"Pas de point de depart ? C'est exactement ce qu'on t'apporte.",confiance:"Peur de ne pas y arriver ? +5000 personnes avaient la meme peur.",pertinence:"Pas convaincu ? On n'a pas encore montre le bon exemple."};
+  document.getElementById('dynTitle').textContent=sel.length===1?(titles[sel[0]]||'On a pense exactement a toi.'):'On a une reponse a chacun de tes freins.';
+}
+
+function renderPers(){
+  const key=answers['q15']||answers['q7']||'anticiper';
+  const time=answers['q12']||'dans_mois';
+  const tl={cette_semaine:'7 jours',dans_mois:'30 jours',dans_3mois:'3 mois',pas_delai:'quelques semaines'};
+  const t=tl[time]||'30 jours';
+  const map={
+    trop_taches:   [['Reduire leurs taches repetitives de 60 a 80% en '+t],['Automatiser ce qui les epuisait au quotidien'],['Se concentrer sur les missions a vraie valeur ajoutee']],
+    evolution:     [['Debloquer leur evolution de carriere en '+t],['Negocier une augmentation grace a leurs nouvelles competences'],['Sortir du lot face aux autres candidats']],
+    differencier:  [['Se differencier clairement sur le marche en '+t],['Developper un avantage concurrentiel durable'],['Valider leurs competences avec une certification officielle']],
+    anticiper:     [['Prendre une longueur d avance avant que ce soit urgent'],['Transformer l IA en opportunite plutot qu en menace'],['Securiser leur carriere pour les 5 prochaines annees']]
+  };
+  const items=(map[key]||map['anticiper']);
+  const icos=['','',''];
+  document.getElementById('persResults').innerHTML=items.map((it,i)=>
+    '<div class="pers-res"><div class="pers-res-ico">&#127942;</div><span>'+it[0]+'</span></div>'
+  ).join('');
+}
+
+function startQuiz(){
+  if(typeof fbq!=='undefined')fbq('track','Lead',{user_id:uid});
+  goTo(2);
+}
+
+function startLoading(){
+  const lp=document.getElementById('lp'),stRev=document.getElementById('stRev'),btn=document.getElementById('btnLRes');
+  const chk='&#10003;';
+  [1,2,3,4].forEach(i=>{document.getElementById('ls'+i).classList.remove('done');document.getElementById('li'+i).innerHTML='o';});
+  lp.style.width='0%';stRev.classList.remove('show');btn.style.display='none';
+  [[1100,25],[2300,50],[3500,75],[4700,100]].forEach(([d,p],i)=>{
+    setTimeout(()=>{document.getElementById('ls'+(i+1)).classList.add('done');document.getElementById('li'+(i+1)).innerHTML=chk;lp.style.width=p+'%';},d);
+  });
+  setTimeout(()=>stRev.classList.add('show'),5300);
+  setTimeout(()=>btn.style.display='block',6000);
+}
+
+function trackConv(){
+  if(typeof fbq!=='undefined')fbq('track','CompleteRegistration',{user_id:uid,value:17,currency:'EUR'});
+}
+</script>
+</body>
+</html>
